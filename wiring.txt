@@ -1,0 +1,164 @@
+═══════════════════════════════════════════════════════════════
+              RS485 SNIFFER - WIRING DIAGRAM
+═══════════════════════════════════════════════════════════════
+
+CONNECTION OVERVIEW:
+
+ESP32 DEV BOARD          XY-485 MODULE            RS485 BUS
+┌─────────────────┐      ┌──────────────┐        ┌──────────┐
+│                 │      │              │        │          │
+│  3V3  ──────────┼──────►  VCC         │        │          │
+│                 │      │              │        │          │
+│  GND  ──────────┼──────►  GND  ───────┼────────►  GND     │
+│                 │      │              │        │          │
+│  GPIO16 ────────┼──────►  RX          │        │          │
+│  (UART2 RXD)    │      │              │        │          │
+│                 │      │              │        │          │
+│  GPIO17 ────────┼──────►  TX          │        │          │
+│  (UART2 TXD)    │      │              │        │          │
+│                 │      │              │        │          │
+│                 │      │  A+  ────────┼────────►  A       │
+│                 │      │              │        │          │
+│                 │      │  B-  ────────┼────────►  B       │
+│                 │      │              │        │          │
+│                 │      │              │        │          │
+└─────────────────┘      └──────────────┘        └──────────┘
+
+
+═══════════════════════════════════════════════════════════════
+                          WIRING STEPS
+═══════════════════════════════════════════════════════════════
+
+STEP 1: ESP32 to XY-485 (TTL Side)
+─────────────────────────────────
+1. Connect ESP32 3V3 pin to XY-485 VCC pin
+   - Powers the XY-485 module with 3.3V
+
+2. Connect ESP32 GND pin to XY-485 GND pin
+   - Provides common ground reference
+
+3. Connect ESP32 GPIO16 to XY-485 RX pin
+   - This is UART2 RXD (receive data)
+   - Monitors RS485 bus traffic
+
+4. Connect ESP32 GPIO17 to XY-485 TX pin (OPTIONAL)
+   - This is UART2 TXD (transmit data)
+   - For passive sniffing, this is not actively used
+   - Connect if you want to inject data later
+
+
+STEP 2: XY-485 to RS485 Bus
+────────────────────────────
+1. Connect XY-485 A+ to RS485 bus A line
+   - Differential positive signal
+
+2. Connect XY-485 B- to RS485 bus B line
+   - Differential negative signal
+
+3. Connect XY-485 GND to RS485 bus GND
+   - Ground reference (IMPORTANT!)
+   - If your bus doesn't have GND, use ESP32 GND
+
+
+═══════════════════════════════════════════════════════════════
+                       HARDWARE NOTES
+═══════════════════════════════════════════════════════════════
+
+XY-485 Module Variations:
+┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅
+
+Some XY-485 modules have additional pins:
+
+• DE (Driver Enable):
+  - For transmitting data
+  - Can be left disconnected for passive monitoring
+  - If present and you want to transmit: connect to GPIO
+
+• RE (Receiver Enable):
+  - Active-low receive enable
+  - Usually tied to GND or connected to DE
+  - If separate: connect to GPIO for control
+
+• PWR LED:
+  - Should light when powered correctly
+
+
+Termination Resistors:
+┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅
+
+• Standard RS485: 120Ω across A and B at each end of bus
+• Your XY-485 module may have built-in termination
+• For short runs (<10m), termination may not be critical
+• For monitoring only (not at end of bus), no termination needed
+
+
+Power Requirements:
+┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅
+
+• ESP32: 5V USB or 3.3V regulated
+• XY-485: 3.0V - 5.5V (3.3V from ESP32 is perfect)
+• Current draw: ~10-20mA typical
+
+
+═══════════════════════════════════════════════════════════════
+                     ESP32 PIN ALTERNATIVES
+═══════════════════════════════════════════════════════════════
+
+Default UART2 Pins (what we use):
+  RX: GPIO16
+  TX: GPIO17
+
+Alternative UART2 Pins (if needed):
+  RX: GPIO13  (some boards use this)
+  TX: GPIO15  (some boards use this)
+
+UART0 (USB Serial, don't use for RS485):
+  RX: GPIO3
+  TX: GPIO1
+
+UART1 (available but conflicts with flash):
+  RX: GPIO9  (not recommended)
+  TX: GPIO10 (not recommended)
+
+
+═══════════════════════════════════════════════════════════════
+                         TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════
+
+"No data received"
+  → Check: A+ to A, B- to B (not reversed)
+  → Check: Ground connection between all devices
+  → Check: XY-485 has power (LED should be on)
+  → Check: Correct baud rate (use auto-detect)
+
+"Garbled data"
+  → Check: Baud rate mismatch
+  → Check: Bus termination resistors
+  → Check: Cable length and quality
+  → Check: Ground loops
+
+"Auto-detect fails"
+  → Need active bus traffic (10+ edges)
+  → Try manual baud rate setting
+  → Increase detection timeout in code
+
+
+═══════════════════════════════════════════════════════════════
+                           QUICK TEST
+═══════════════════════════════════════════════════════════════
+
+After wiring, test with this sequence:
+
+1. Power on ESP32 (USB connected)
+2. Open Serial Monitor at 115200 baud
+3. You should see:
+   "RS485 Sniffer - ESP32"
+   "Default baud rate: 4800"
+
+4. Press 'h' to see help menu
+5. If bus has traffic, you should see data within seconds
+6. If no data, press 'd' to detect baud rate
+7. Still no data? Check wiring again
+
+
+═══════════════════════════════════════════════════════════════
