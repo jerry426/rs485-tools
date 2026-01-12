@@ -1,3 +1,37 @@
+# RS485 Tools
+
+A collection of RS485 utilities for Arduino/ESP32 development and debugging.
+
+## Main Utility
+
+**📍 Location: `arduino/rs485_sniffer/rs485_sniffer/`**
+
+The `rs485_sniffer` is the primary utility in this project. It's an RS485 communication monitor for ESPHome devices that captures and displays RS485 data frames in real-time.
+
+### Quick Start
+
+1. Navigate to the main utility: `cd arduino/rs485_sniffer/rs485_sniffer/`
+2. Open `rs485_sniffer.ino` in Arduino IDE
+3. Upload to your ESP board
+4. See [arduino/rs485_sniffer/readme.md](arduino/rs485_sniffer/readme.md) for detailed documentation
+
+## Other Utilities
+
+This repository also contains supporting utilities in the `arduino/` directory:
+
+| Utility | Purpose |
+|---------|---------|
+| `rs485_autobaud/` | Auto-detection of RS485 baud rates |
+| `rs485_data_inspector/` | Detailed RS485 data inspection |
+| `rs485_esphome_stream/` | ESPHome streaming utilities |
+| `rs485_wiring_diagnostic/` | Wiring and hardware diagnostics |
+| `gpio_test/` | GPIO pin testing |
+| `uart_loopback/`, `uart_loopback_test/`, `uart_loopback_alt_pins/` | UART loopback testing |
+
+These utilities are provided for development and debugging purposes. The main production utility is **rs485_sniffer**.
+
+---
+
 # RS485 Sniffer - ESP32
 
 An intelligent RS485 bus sniffer that can auto-detect baud rates and capture traffic using an ESP32 and XY-485 converter module.
@@ -50,13 +84,13 @@ An intelligent RS485 bus sniffer that can auto-detect baud rates and capture tra
 1. Open Arduino IDE
 2. Select your ESP32 board from Tools > Board
 3. Select the correct COM port
-4. Open `rs485_sniffer.ino`
+4. Open `arduino/rs485_sniffer/rs485_sniffer/rs485_sniffer.ino`
 5. Click Upload
 
 ### PlatformIO
 
 1. Create a new PlatformIO project for ESP32
-2. Copy `rs485_sniffer.ino` to `src/main.cpp`
+2. Copy `arduino/rs485_sniffer/rs485_sniffer/rs485_sniffer.ino` to `src/main.cpp`
 3. Build and upload
 
 ## Usage
